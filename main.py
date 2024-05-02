@@ -12,6 +12,7 @@ voyage_api_key = os.environ.get('VOYAGE_KEY')
 
 groq_api_key = st.secrets["GROQ_KEY"]
 voyage_api_key = st.secrets["VOYAGE_KEY"]
+
 embedd_model = VoyageAIEmbeddings(voyage_api_key=voyage_api_key, model="voyage-law-2")
 
 
