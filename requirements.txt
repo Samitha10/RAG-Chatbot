@@ -1,0 +1,8 @@
+streamlit
+groq
+langchain
+langchain_groq
+python-dotenv
+langchain-voyageai
+faiss-cpu
+pdfplumber
