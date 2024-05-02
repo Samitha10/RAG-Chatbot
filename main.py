@@ -7,8 +7,6 @@ import pdfplumber
 from langchain_community.vectorstores import FAISS
 from langchain_voyageai import VoyageAIEmbeddings
 
-
-
 groq_api_key = os.environ.get('GROQ_KEY')
 voyage_api_key = os.environ.get('VOYAGE_KEY')
 embedd_model = VoyageAIEmbeddings(voyage_api_key=voyage_api_key, model="voyage-law-2")
@@ -24,7 +22,7 @@ def get_pdf_text_from_sidebar(pdf_files):
     return text
 # Split into chunks
 def get_text_chunks(raw_text):
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=1000)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
     chunks = text_splitter.split_text(raw_text)
     return chunks
 
@@ -87,7 +85,7 @@ def final():
     spacer, col = st.columns([5, 1])  
     with col:  
         st.markdown('###### [Contact Me](https://github.com/Samitha10)')
-        st.markdown("[![GitHub](https://img.shields.io/badge/GitHub-000000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/your_username/your_repository)")
+        st.markdown("[![GitHub](https://img.shields.io/badge/GitHub-000000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Samitha10/RAG-Chatbot)")
     # Display the title and introduction of the application
     st.title("Chat with your PDF files")
     multiline_text = """Welcome! Ask questions about from the PDF files."""
@@ -134,8 +132,4 @@ def final():
             st.write(message)
 
 
-    
-
-
-
-final() 
+final()
