@@ -24,7 +24,7 @@ def get_pdf_text_from_sidebar(pdf_files):
     return text
 # Split into chunks
 def get_text_chunks(raw_text):
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=1000)
     chunks = text_splitter.split_text(raw_text)
     return chunks
 
