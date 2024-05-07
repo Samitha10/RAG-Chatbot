@@ -53,7 +53,7 @@ def get_relevant_excerpts(user_question):
 def chat_completion(client, model, user_question, relevant_excerpts, additional_context):
     
     system_prompt = '''
-    You are a statistician.
+    Give simple and understandable answers defaulting to the most relevant information from the PDF files.
     '''
     # Add the additional context to the system prompt if it's not empty
     if additional_context != '':
