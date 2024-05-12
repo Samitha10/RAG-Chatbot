@@ -135,5 +135,4 @@ def final():
         for message in st.session_state.chat_history:
             st.write(message)
 
-
 final()
