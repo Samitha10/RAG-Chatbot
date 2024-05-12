@@ -88,7 +88,7 @@ def final():
     )
     spacer, col = st.columns([5, 1])  
     with col:  
-        st.markdown('###### [Contact Me](https://github.com/Samitha10)')
+        #st.markdown('###### [Contact Me](https://github.com/Samitha10)')
         st.markdown("[![GitHub](https://img.shields.io/badge/GitHub-000000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Samitha10/RAG-Chatbot)")
     # Display the title and introduction of the application
     st.title("Chat with your PDF files")
