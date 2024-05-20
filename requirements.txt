@@ -6,3 +6,4 @@ python-dotenv
 langchain-voyageai
 faiss-cpu
 pdfplumber
+langchain_community
