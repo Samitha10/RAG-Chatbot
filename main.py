@@ -1,19 +1,17 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import streamlit as st
 import os
-from groq import Groq
 import pdfplumber
 
 from langchain_community.vectorstores import FAISS
 from langchain_voyageai import VoyageAIEmbeddings
-
 
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_groq import ChatGroq
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationChain
 from langchain_core.messages import SystemMessage
-import os, re, json, sys
+import os
 from langchain_core.prompts import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
@@ -22,8 +20,8 @@ from langchain_core.prompts import (
 groq_api_key = os.environ.get('GROQ_KEY')
 voyage_api_key = os.environ.get('VOYAGE_KEY')
 
-# groq_api_key = st.secrets["GROQ_KEY"]
-# voyage_api_key = st.secrets["VOYAGE_KEY"]
+groq_api_key = st.secrets["GROQ_KEY"]
+voyage_api_key = st.secrets["VOYAGE_KEY"]
 
 embedd_model = VoyageAIEmbeddings(voyage_api_key=voyage_api_key, model="voyage-law-2")
 
@@ -38,7 +36,7 @@ def get_pdf_text_from_sidebar(pdf_files):
     return text
 # Split into chunks
 def get_text_chunks(raw_text):
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
     chunks = text_splitter.split_text(raw_text)
     return chunks
 
@@ -59,13 +57,14 @@ def get_relevant_excerpts(user_question):
     vectors = FAISS.load_local("faiss_index", embedd_model,allow_dangerous_deserialization=True)
     docs = vectors.similarity_search(user_question)
     relevant_excerpts = '\n\n------------------------------------------------------\n\n'.join([doc.page_content for doc in docs[:3]])
+    print(relevant_excerpts)
     return relevant_excerpts
 
 memory=ConversationBufferMemory(memory_key="history", return_messages=True)
 
 def chat_completion(client, user_question, relevant_excerpts, additional_context):
     system_message = '''
-    Give simple and understandable answers defaulting to the most relevant information from the PDF files.
+    Give simple and understandable answers defaulting to the most relevant information from the PDF files. If there is no relevent content, say "No relevant content found".
     '''
     # Add the additional context to the system prompt if it's not empty
     if additional_context != '':
@@ -92,7 +91,7 @@ def chat_completion(client, user_question, relevant_excerpts, additional_context
     chain = ConversationChain(
         memory=memory,
         llm=client,
-        verbose = True,
+        verbose = False,
         prompt=prompt,
     )
 
@@ -104,14 +103,10 @@ def chat_completion(client, user_question, relevant_excerpts, additional_context
     return answer
 
 def final():
-    # Initialize the Groq client
-    model = st.sidebar.selectbox(
-        'Choose a model',
-        ['llama3-8b-8192', 'mixtral-8x7b-32768', 'gemma-7b-it'])
-    client = ChatGroq(temperature=0.7,model=model, groq_api_key=groq_api_key)
-
     # Display the title and introduction of the application
     st.title("Chat with your PDF files")
+    st.markdown('---')
+
     multiline_text = """Welcome! Ask questions about from the PDF files."""
 
     st.markdown(multiline_text, unsafe_allow_html=True)
@@ -126,8 +121,16 @@ def final():
             text_chunks = get_text_chunks(raw_text)
             get_vector_store(text_chunks)
             st.success("Your Chatbot is ready.")
+    st.sidebar.markdown("""---""")
     additional_context = st.sidebar.text_input('Enter additional summarization context for the LLM here (i.e. write it in simple):')
     
+    # Initialize the Groq client
+    model = st.sidebar.selectbox(
+        'Choose a model',
+        ['llama3-8b-8192', 'mixtral-8x7b-32768', 'gemma-7b-it'])
+    client = ChatGroq(temperature=0.7,model=model, groq_api_key=groq_api_key)
+
+
     # Initialize chat history if not already done
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -151,7 +154,7 @@ def final():
         # Add the responses to the chat history
         st.session_state.messages.append({"role": "assistant", "content": response})
         with st.chat_message("assistant", avatar="🤖"):
-            st.write(message)
+            st.write(response)
 
 
 final()
